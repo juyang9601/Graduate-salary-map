@@ -1,0 +1,2 @@
+/*d3 hover confilct the bootstrap*/
+svg .tooltip { opacity: 1; }
