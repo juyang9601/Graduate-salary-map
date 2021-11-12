@@ -292,40 +292,7 @@
 
 			//legend2.addTo(mymap);
 
-		  var charts = {};
-		  var minicharts =  L.layerGroup().addTo(mymap);
-		  for (var i = 0; i < data.length; i++) {
-		    var d = data[i];
-
-
-		      var salaries= [
-		        d.Starting_M/500 ,
-		        d.ten/500 ,
-		        d.twentyfive/500,
-		        d.Median_Sal/500,
-		        d.seventyfive/500 ,
-		        d.nity/500 ,
-		      ];
-		      //console.log(salaries);
-
-		      charts[d.School_Name] = L.minichart(
-		    [d.Lat, d.Lon+0.05],
-		    {
-		      data: salaries,
-		      maxValues: 652,
-		      width:60, height:60,
-		      colors: ["#FDD7E4", "#FAAFBE", "#F9A7B0","#E38AAE","#E56E94","#E4287C"],
-		      legend: true
-		    }
-		  );
-		      mymap.addLayer(charts[d.School_Name] ) ;
-		      minicharts.addLayer(charts[d.School_Name]);
-		//      console.log(minilayers[i]);
-
-		    };
-		      //console.log(minilayers);
-		      //minicharts = L.layerGroup([minilayers[2]]);
-		      //console.log(minicharts);
+		  
 
 		var baseMaps = {
 		"Average Starting Salaries": geojson,
@@ -333,34 +300,7 @@
 
 		};
 
-		var overlayMaps = {
-		//"US Universities":universitiesType,
-		"Salary Charts":minicharts,
-		};
-
-		// initialize up the L.control.layers
-		L.control.layers(baseMaps, overlayMaps).addTo(mymap);
-
-		var legend3 = L.control({position: 'bottomright'});
-
-		legend3.onAdd = function (map) {
-
-		    var div = L.DomUtil.create('div', 'info legend'),
-		        grades = ["Starting Median Salaries", "10th Percentile Salaries","25th Percentile Salaries","Median Salaries","75th Percentile Salaries","90th Percentile Salaries"],
-		        colors = ["#FDD7E4", "#FAAFBE", "#F9A7B0","#E38AAE","#E56E94","#E4287C"]
-		        labels=[];
-
-		    // loop through our density intervals and generate a label with a colored square for each interval
-		    for (var i = 0; i < grades.length; i++) {
-		      labels.push(
-		                      '<i style="background:' + colors[i] + '"></i> ' +
-		                      grades[i]);
-		              }
-
-		              div.innerHTML = labels.join('<br>');
-		             return div;
-		};
-		legend3.addTo(mymap);
+		
 		legend1.addTo(mymap);
 
 		/*function hide_charts(e) {
