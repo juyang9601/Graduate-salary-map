@@ -373,44 +373,7 @@
 
 		//console.log(minicharts);
 		//mymap.removeLayer(minicharts);
-		mymap.on('overlayadd',function (eventLayer) {
-		  //console.log(eventLayer.name)
-		if (eventLayer.name === 'Salary Charts') {
-
-		      legend3.addTo(mymap);}
-		});
-
-		mymap.on('overlayremove',function (eventLayer) {
-		  //console.log(eventLayer.name)
-		if (eventLayer.name === 'Salary Charts') {
-
-		      mymap.removeControl(legend3);}
-		});
-
-		mymap.on('baselayerchange',function (eventLayer) {
-		//  console.log(eventLayer.name);
-
-		  if (eventLayer.name === 'Average Starting Salaries') {
-		       //this.removeControl(legend2);
-		       //legend2.addTo(this);}
-		       //eventLayer._chart.remove()
-		       //hide_charts;
-		       legend1.remove();
-		       //legend3.remove();
-		       legend2.addTo(mymap);
-		       info.addTo(mymap);
-		       mymap.addLayer(geojson);
-		       //hide_charts(minicharts);
-		     }
-		  else {
-		       //this.removeControl(legend1);
-		       //legend1.addTo(this);
-		       //eventLayer._chart.remove()
-		       info.remove();
-		       legend2.remove();
-		       //legend3.remove();
-		       legend1.addTo(mymap);
-		  }});
+		
 
 		</script>
 	</body>
