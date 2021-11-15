@@ -1,319 +1,415 @@
 <!DOCTYPE html>
-
 <html>
-	<head>
-		<meta charset="utf-8">
-  		<meta name="viewport" content="width=device-width, initial-scale=1">
-  		<title>Midterm Project</title>
-
-		<link rel="stylesheet" href="css/styles.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<script src="//d3js.org/d3.v4.min.js"></script>
-
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-		   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-		   crossorigin=""/>
-		<link rel="stylesheet" href="css/leaflet-search.css" />
-		   <!-- Make sure you put this AFTER Leaflet's CSS -->
-		<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-		  integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-		  crossorigin=""></script>
-		<script src="js/leaflet-search.js"></script>
-		<script type="text/javascript" src="js/us_states_updated.js"></script>
-		<script type="text/javascript" src="js/salaries_updated.js"></script>
-		<script type="text/javascript" src="js/state_salaries.js"></script>
-		<script type="text/javascript" src="js/univ_salaries.js"></script>
-		<script src="https://unpkg.com/leaflet.minichart/dist/leaflet.minichart.min.js" charset="utf-8"></script>
+<head>
+<title>College Graduate salaries</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+<link rel="stylesheet" href="leaflet-search.css" />
+   <!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+  integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+  crossorigin=""></script>
+<script src="leaflet-search.js"></script>
+<script type="text/javascript" src="us_states_updated.js"></script>
+<script type="text/javascript" src="salaries_updated.js"></script>
+<script type="text/javascript" src="state_salaries.js"></script>
+<script type="text/javascript" src="univ_salaries.js"></script>
+<script src="https://unpkg.com/leaflet.minichart/dist/leaflet.minichart.min.js" charset="utf-8"></script>
 
 
-			<style>#map { width: 800px; height: 500px; }
-		.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
-		.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
-	</head>
+<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 400px;
+		}
+	</style>
 
-	<body>
+	<style>#map { width: 800px; height: 500px; }
+.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
 
-		<h3 align="center">Salaries by College and State</h3>
-		<div id="second">
-		</div>
+</head>
+<body>
+<div id="mapid" style="width: 960px; height: 500px;"></div>
+<script>
+var mymap = L.map('mapid').setView([40, -98], 4);
 
-		<div align = "center" id="mapid" style="width: 1260px; height: 600px;"></div>
-		<script>
-		var mymap = L.map('mapid').setView([40, -98], 4);
+var tileServer = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+var tileAttribution = 'Map data: <a href="http://openstreetmap.org">OSM</a>';
+L.tileLayer(tileServer, {attribution: tileAttribution,  maxZoom: 11}).addTo(mymap);
+/*L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoianV5YW5nOTYwMSIsImEiOiJjam5vemJ1YjgybXUzM3Jxcmp5MTZxYTVqIn0.T-gJf84rI7QKYAVTyQ4Oew', {
+		maxZoom: 13,
+		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		id: 'mapbox.light'
+	}).addTo(mymap);*/
 
-		var tileServer = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-		var tileAttribution = 'Map data: <a href="http://openstreetmap.org">OSM</a>';
-		L.tileLayer(tileServer, {attribution: tileAttribution,  maxZoom: 11}).addTo(mymap);
-		/*L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoianV5YW5nOTYwMSIsImEiOiJjam5vemJ1YjgybXUzM3Jxcmp5MTZxYTVqIn0.T-gJf84rI7QKYAVTyQ4Oew', {
-				maxZoom: 13,
-				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-					'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-					'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-				id: 'mapbox.light'
-			}).addTo(mymap);*/
+  function getColor(d) {
+		return d === "Northeastern" ? '#C5E1A5' :
+				d === "California"  ? '#FFF59D' :
+				d === 'Midwestern'  ? '#B39DDB' :
+				d === 'Southern'  ? '#FFAB91' :
+				d === 'Western'  ? '#B2DFDB' :
+							'#FFCCCC';
+	}
 
-		  function getColor(d) {
-				return d === "Northeastern" ? '#C5E1A5' :
-						d === "California"  ? '#FFF59D' :
-						d === 'Midwestern'  ? '#B39DDB' :
-						d === 'Southern'  ? '#FFAB91' :
-						d === 'Western'  ? '#B2DFDB' :
-									'#FFCCCC';
-			}
-
-			function style(feature) {
-				return {
-					weight: 2,
-					opacity: 1,
-					color: 'white',
-					dashArray: '3',
-					fillOpacity: 0.7,
-					fillColor: getColor(feature.properties.Region)
-				};
-			}
-		//var states = L.geoJson(statesData,{
-		//  style:style
-		//	});
-
-		// create an icon object
-		var art = L.icon({
-		    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
-		    iconSize:     [28, 28], // size of the icon
-		    iconAnchor:   [22, 22], // point of the icon which will correspond to marker's location
-		    popupAnchor:  [-3, -26] // point from which the popup should open relative to the iconAnchor
-		});
-		var engineering = L.icon({
-		    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
-		    iconSize:     [28, 28],
-		    iconAnchor:   [22, 22],
-		    popupAnchor:  [-3, -26]
-		});
-		var party = L.icon({
-		    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-		    iconSize:     [28, 28],
-		    iconAnchor:   [22, 22],
-		    popupAnchor:  [-3, -26]
-		});
-		var state = L.icon({
-		    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-		    iconSize:     [28, 28],
-		    iconAnchor:   [22, 22],
-		    popupAnchor:  [-3, -26]
-		});
-		var ivy = L.icon({
-		    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-		    iconSize:     [28, 28],
-		    iconAnchor:   [22, 22],
-		    popupAnchor:  [-3, -26]
-		});
-
-		function SchoolType(feature, latlng) {
-		    switch(feature.properties.School_Type) {
-		        case "Liberal Arts":
-		            return L.marker(latlng, {icon: art});
-		        case "Engineering":
-		            return L.marker(latlng, {icon: engineering});
-		        case "Party":
-		            return L.marker(latlng, {icon: party});
-		        case "State":
-		            return L.marker(latlng, {icon: state});
-		        case "Ivy League":
-		            return L.marker(latlng, {icon: ivy});
-		    }
+	function style(feature) {
+		return {
+			weight: 2,
+			opacity: 1,
+			color: 'white',
+			dashArray: '3',
+			fillOpacity: 0.7,
+			fillColor: getColor(feature.properties.Region)
 		};
+	}
+//var states = L.geoJson(statesData,{
+//  style:style
+//	});
 
-		var universitiesType = L.geoJson(salariesData,{
-		  pointToLayer: SchoolType,
-		  onEachFeature:function (feature, marker) {
-		        marker.bindPopup("<b>"+feature.properties.School_Name+"</b>"+ "<br/>"+ "Starting Median Salaries: " + feature.properties.Starting_Median_Salary +" USD"
+// create an icon object
+var art = L.icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+    iconSize:     [28, 28], // size of the icon
+    iconAnchor:   [22, 22], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-3, -26] // point from which the popup should open relative to the iconAnchor
+});
+var engineering = L.icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png',
+    iconSize:     [28, 28],
+    iconAnchor:   [22, 22],
+    popupAnchor:  [-3, -26]
+});
+var party = L.icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    iconSize:     [28, 28],
+    iconAnchor:   [22, 22],
+    popupAnchor:  [-3, -26]
+});
+var state = L.icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+    iconSize:     [28, 28],
+    iconAnchor:   [22, 22],
+    popupAnchor:  [-3, -26]
+});
+var ivy = L.icon({
+    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+    iconSize:     [28, 28],
+    iconAnchor:   [22, 22],
+    popupAnchor:  [-3, -26]
+});
 
-		         //+ "<br/>"+ "10th Percentile Salaries: " + feature.properties.ten_Salary +" USD"
-		         //+ "<br/>"+ "25th Percentile Salaries: " + feature.properties.twentyfive_Salary +" USD"
-		         + "<br/>"+ "Mid-Career Median Salaries: " + feature.properties.Median_Salary +" USD"
-		         //+ "<br/>"+ "75th Percentile Salaries: " + feature.properties.seventyfive_Salary +" USD"
-		         + "<br/>"+ "Mid-Career 90th Percentile Salaries: " + feature.properties.ninty_Salary +" USD");
-		    }
+function SchoolType(feature, latlng) {
+    switch(feature.properties.School_Type) {
+        case "Liberal Arts":
+            return L.marker(latlng, {icon: art});
+        case "Engineering":
+            return L.marker(latlng, {icon: engineering});
+        case "Party":
+            return L.marker(latlng, {icon: party});
+        case "State":
+            return L.marker(latlng, {icon: state});
+        case "Ivy League":
+            return L.marker(latlng, {icon: ivy});
+    }
+};
+
+var universitiesType = L.geoJson(salariesData,{
+  pointToLayer: SchoolType,
+  onEachFeature:function (feature, marker) {
+        marker.bindPopup("<b>"+feature.properties.School_Name+"</b>"+ "<br/>"+ "Starting Median Salaries: " + feature.properties.Starting_Median_Salary +" USD"
+
+         //+ "<br/>"+ "10th Percentile Salaries: " + feature.properties.ten_Salary +" USD"
+         //+ "<br/>"+ "25th Percentile Salaries: " + feature.properties.twentyfive_Salary +" USD"
+         + "<br/>"+ "Mid-Career Median Salaries: " + feature.properties.Median_Salary +" USD"
+         //+ "<br/>"+ "75th Percentile Salaries: " + feature.properties.seventyfive_Salary +" USD"
+         + "<br/>"+ "Mid-Career 90th Percentile Salaries: " + feature.properties.ninty_Salary +" USD");
+    }
+});
+mymap.addLayer(universitiesType);
+
+/*var universities = L.geoJson(salariesData,{
+  onEachFeature:function (feature, layer) {
+        layer.bindPopup(feature.properties.School_Name);
+    }
+});*/
+
+
+var legend1 = L.control({position: 'bottomright'});
+
+legend1.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = ["Liberal art", "Ivy league","State","Engineering","Party"],
+        labels = ["https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png"];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            grades[i] + (" <img src="+ labels[i] +" height='25' width='20'>") +'<br>';
+    }
+
+    return div;
+};
+
+
+
+var searchControl = new L.Control.Search({
+                        layer: universitiesType ,
+                        propertyName: 'School_Name',
+                        markerLocation:false,
+                        marker: L.circleMarker([0,0],{radius:20}),
+                        moveToLocation: function(latlng,School_Name, mymap) {
+  			//map.fitBounds( latlng.layer.getBounds() );
+  			var zoom = 10;
+    			mymap.setView(latlng, zoom); // access the zoom
+  		}});
+//console.log(universitiesType)
+searchControl.on('search:locationfound', function(e) {
+        //console.log('search:locationfound', );
+        e.layer.openPopup();
+        }).on('search_collapsed', function(e) {
+        marker.resetStyle(layer);
+        });
+mymap.addControl( searchControl );  //inizialize search control
+
+var info = L.control();
+
+	info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info');
+		this.update();
+		return this._div;
+	};
+
+	info.update = function (props) {
+		this._div.innerHTML = '<h4>Average starting salaries</h4>' +  (props ?
+			'<b>' + props.name + '</b><br />' + props.salaries + ' USD'
+			: 'Hover over a state');
+	};
+
+	//info.addTo(mymap);
+
+function getSalariesColor(d) {
+  return d > 51000 ? '#800026' :
+				d > 48000  ? '#BD0026' :
+				d > 46000  ? '#E31A1C' :
+				d > 45000  ? '#FC4E2A' :
+				d > 43000   ? '#FD8D3C' :
+				d > 42000   ? '#FEB24C' :
+				d > 40000   ? '#FED976' :
+							'#FFEDA0';
+}
+
+function style_state(feature) {
+  return {
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7,
+    fillColor: getSalariesColor(feature.properties.salaries)
+  };
+}
+var states_salaries = L.geoJson(state_salaries,{
+style:style_state
+});
+
+function highlightFeature(e) {
+		var layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
 		});
-		mymap.addLayer(universitiesType);
 
-		/*var universities = L.geoJson(salariesData,{
-		  onEachFeature:function (feature, layer) {
-		        layer.bindPopup(feature.properties.School_Name);
-		    }
-		});*/
-
-
-		var legend1 = L.control({position: 'bottomright'});
-
-		legend1.onAdd = function (map) {
-
-		    var div = L.DomUtil.create('div', 'info legend'),
-		        grades = ["Liberal art", "Ivy league","State","Engineering","Party"],
-		        labels = ["https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-violet.png","https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png"];
-
-		    // loop through our density intervals and generate a label with a colored square for each interval
-		    for (var i = 0; i < grades.length; i++) {
-		        div.innerHTML +=
-		            grades[i] + (" <img src="+ labels[i] +" height='25' width='20'>") +'<br>';
-		    }
-
-		    return div;
-		};
-
-
-
-		var searchControl = new L.Control.Search({
-		                        layer: universitiesType ,
-		                        propertyName: 'School_Name',
-		                        markerLocation:false,
-		                        marker: L.circleMarker([0,0],{radius:20}),
-		                        moveToLocation: function(latlng,School_Name, mymap) {
-		  			//map.fitBounds( latlng.layer.getBounds() );
-		  			var zoom = 10;
-		    			mymap.setView(latlng, zoom); // access the zoom
-		  		}});
-		//console.log(universitiesType)
-		searchControl.on('search:locationfound', function(e) {
-		        //console.log('search:locationfound', );
-		        e.layer.openPopup();
-		        }).on('search_collapsed', function(e) {
-		        marker.resetStyle(layer);
-		        });
-		mymap.addControl( searchControl );  //inizialize search control
-
-		var info = L.control();
-
-			info.onAdd = function (map) {
-				this._div = L.DomUtil.create('div', 'info');
-				this.update();
-				return this._div;
-			};
-
-			info.update = function (props) {
-				this._div.innerHTML = '<h4>Average starting salaries</h4>' +  (props ?
-					'<b>' + props.name + '</b><br />' + props.salaries + ' USD'
-					: 'Hover over a state');
-			};
-
-			//info.addTo(mymap);
-
-		function getSalariesColor(d) {
-		  return d > 51000 ? '#800026' :
-						d > 48000  ? '#BD0026' :
-						d > 46000  ? '#E31A1C' :
-						d > 45000  ? '#FC4E2A' :
-						d > 43000   ? '#FD8D3C' :
-						d > 42000   ? '#FEB24C' :
-						d > 40000   ? '#FED976' :
-									'#FFEDA0';
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
 		}
 
-		function style_state(feature) {
-		  return {
-		    weight: 2,
-		    opacity: 1,
-		    color: 'white',
-		    dashArray: '3',
-		    fillOpacity: 0.7,
-		    fillColor: getSalariesColor(feature.properties.salaries)
-		  };
-		}
-		var states_salaries = L.geoJson(state_salaries,{
-		style:style_state
+		info.update(layer.feature.properties);
+	}
+
+	function resetHighlight(e) {
+		geojson.resetStyle(e.target);
+		info.update();
+	}
+
+	function zoomToFeature(e) {
+		mymap.fitBounds(e.target.getBounds());
+	}
+
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToFeature
 		});
+	}
 
-		function highlightFeature(e) {
-				var layer = e.target;
+	var geojson = L.geoJson(state_salaries, {
+		style: style_state,
+		onEachFeature: onEachFeature
+	});
 
-				layer.setStyle({
-					weight: 5,
-					color: '#666',
-					dashArray: '',
-					fillOpacity: 0.7
-				});
+  //mymap.addLayer(geojson);
 
-				if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-					layer.bringToFront();
-				}
-
-				info.update(layer.feature.properties);
-			}
-
-			function resetHighlight(e) {
-				geojson.resetStyle(e.target);
-				info.update();
-			}
-
-			function zoomToFeature(e) {
-				mymap.fitBounds(e.target.getBounds());
-			}
-
-			function onEachFeature(feature, layer) {
-				layer.on({
-					mouseover: highlightFeature,
-					mouseout: resetHighlight,
-					click: zoomToFeature
-				});
-			}
-
-			var geojson = L.geoJson(state_salaries, {
-				style: style_state,
-				onEachFeature: onEachFeature
-			});
-
-		  //mymap.addLayer(geojson);
-
-			//mymap.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+	//mymap.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
 
 
-			var legend2 = L.control({position: 'bottomright'});
+	var legend2 = L.control({position: 'bottomright'});
 
-			legend2.onAdd = function (map) {
+	legend2.onAdd = function (map) {
 
-				var div = L.DomUtil.create('div', 'info legend'),
-					grades = [0, 40000, 42000, 43000, 45000, 46000, 48000, 51000],
-					labels = [],
-					from, to;
+		var div = L.DomUtil.create('div', 'info legend'),
+			grades = [0, 40000, 42000, 43000, 45000, 46000, 48000, 51000],
+			labels = [],
+			from, to;
 
-				for (var i = 0; i < grades.length; i++) {
-					from = grades[i];
-					to = grades[i + 1];
+		for (var i = 0; i < grades.length; i++) {
+			from = grades[i];
+			to = grades[i + 1];
 
-					labels.push(
-						'<i style="background:' + getSalariesColor(from + 1) + '"></i> ' +
-						from + (to ? '&ndash;' + to : '+'));
-				}
+			labels.push(
+				'<i style="background:' + getSalariesColor(from + 1) + '"></i> ' +
+				from + (to ? '&ndash;' + to : '+'));
+		}
 
-				div.innerHTML = labels.join('<br>');
-				return div;
-			};
+		div.innerHTML = labels.join('<br>');
+		return div;
+	};
 
-			//legend2.addTo(mymap);
+	//legend2.addTo(mymap);
 
-		  
+  var charts = {};
+  var minicharts =  L.layerGroup().addTo(mymap);
+  for (var i = 0; i < data.length; i++) {
+    var d = data[i];
 
-		var baseMaps = {
-		"Average Starting Salaries": geojson,
-		"Salaries throughout Career":universitiesType,
 
-		};
-		L.control.layers(baseMaps, overlayMaps).addTo(mymap);
-		legend1.addTo(mymap);
+      var salaries= [
+        d.Starting_M/500 ,
+        d.ten/500 ,
+        d.twentyfive/500,
+        d.Median_Sal/500,
+        d.seventyfive/500 ,
+        d.nity/500 ,
+      ];
+      //console.log(salaries);
 
-		/*function hide_charts(e) {
-		 e.layer.eachLayer(
-		    function(t) {
-		       if (t._chart) { t._chart.remove(); }
-		    }
-		 );
-		}*/
+      charts[d.School_Name] = L.minichart(
+    [d.Lat, d.Lon+0.05],
+    {
+      data: salaries,
+      maxValues: 652,
+      width:60, height:60,
+      colors: ["#FDD7E4", "#FAAFBE", "#F9A7B0","#E38AAE","#E56E94","#E4287C"],
+      legend: true
+    }
+  );
+      mymap.addLayer(charts[d.School_Name] ) ;
+      minicharts.addLayer(charts[d.School_Name]);
+//      console.log(minilayers[i]);
 
-		//console.log(minicharts);
-		//mymap.removeLayer(minicharts);
-		
+    };
+      //console.log(minilayers);
+      //minicharts = L.layerGroup([minilayers[2]]);
+      //console.log(minicharts);
 
-		</script>
-	</body>
+var baseMaps = {
+"Average Starting Salaries": geojson,
+"Salaries throughout Career":universitiesType,
+
+};
+
+var overlayMaps = {
+//"US Universities":universitiesType,
+"Salary Charts":minicharts,
+};
+
+// initialize up the L.control.layers
+L.control.layers(baseMaps, overlayMaps).addTo(mymap);
+
+var legend3 = L.control({position: 'bottomleft'});
+
+legend3.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = ["Starting Median Salaries", "10th Percentile Salaries","25th Percentile Salaries","Median Salaries","75th Percentile Salaries","90th Percentile Salaries"],
+        colors = ["#FDD7E4", "#FAAFBE", "#F9A7B0","#E38AAE","#E56E94","#E4287C"]
+        labels=[];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+      labels.push(
+                      '<i style="background:' + colors[i] + '"></i> ' +
+                      grades[i]);
+              }
+
+              div.innerHTML = labels.join('<br>');
+             return div;
+};
+legend3.addTo(mymap);
+legend1.addTo(mymap);
+
+/*function hide_charts(e) {
+ e.layer.eachLayer(
+    function(t) {
+       if (t._chart) { t._chart.remove(); }
+    }
+ );
+}*/
+
+//console.log(minicharts);
+//mymap.removeLayer(minicharts);
+mymap.on('overlayadd',function (eventLayer) {
+  //console.log(eventLayer.name)
+if (eventLayer.name === 'Salary Charts') {
+
+      legend3.addTo(mymap);}
+});
+
+mymap.on('overlayremove',function (eventLayer) {
+  //console.log(eventLayer.name)
+if (eventLayer.name === 'Salary Charts') {
+
+      mymap.removeControl(legend3);}
+});
+
+mymap.on('baselayerchange',function (eventLayer) {
+//  console.log(eventLayer.name);
+
+  if (eventLayer.name === 'Average Starting Salaries') {
+       //this.removeControl(legend2);
+       //legend2.addTo(this);}
+       //eventLayer._chart.remove()
+       //hide_charts;
+       legend1.remove();
+       //legend3.remove();
+       legend2.addTo(mymap);
+       info.addTo(mymap);
+       mymap.addLayer(geojson);
+       //hide_charts(minicharts);
+     }
+  else {
+       //this.removeControl(legend1);
+       //legend1.addTo(this);
+       //eventLayer._chart.remove()
+       info.remove();
+       legend2.remove();
+       //legend3.remove();
+       legend1.addTo(mymap);
+  }});
+
+</script>
+</body>
 </html>
